@@ -1,0 +1,48 @@
+[
+  {
+    "tradingName": "Adega da Cerveja - Pinheiros",
+    "ownerName": "Zé da Silva",
+    "document": "1432132123891/0001",
+    "coverageArea": {
+      "type": "MultiPolygon",
+      "coordinates": [
+        [[[30, 20], [45, 40], [10, 40], [30, 20]]],
+        [[[15, 5], [40, 10], [10, 20], [5, 10], [15, 5]]]
+      ]
+    },
+    "address": {
+      "type": "Point",
+      "coordinates": [-46.57421, -21.785741]
+    }
+  },
+    {
+    "tradingName": "Cerveijaria Boa",
+    "ownerName": "João Feitosa",
+    "document": "1132132123333/0001",
+    "coverageArea": {
+      "type": "MultiPolygon",
+      "coordinates": [
+        [[[30, 20], [45, 40], [10, 40], [30, 20]]]
+      ]
+    },
+    "address": {
+      "type": "Point",
+      "coordinates": [-46.57410, -21.785740]
+    }
+  },
+    {
+    "tradingName": "Cervejaria Quase Boa",
+    "ownerName": "Lucas Silva e Silva",
+    "document": "1832132125523/0001",
+    "coverageArea": {
+      "type": "MultiPolygon",
+      "coordinates": [
+        [[[30, 20], [45, 40], [10, 40], [30, 20]]]
+      ]
+    },
+    "address": {
+      "type": "Point",
+      "coordinates": [-46.55401, -21.785821]
+    }
+  }
+]
