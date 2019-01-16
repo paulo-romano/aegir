@@ -15,14 +15,6 @@ class TestShellCommand:
         assert shell_command.help == \
             'Execute a python interactive shell with Aegir context.'
 
-    def test_load_command_must_rise_error(self, mocker):
-        shell_command = getattr(shell, 'shell')
-        mocked_embed = mocker.patch.object(shell, 'embed')
-
-        shell_command.callback()
-
-        assert mocked_embed.called
-
     @pytest.mark.parametrize('name, expected_value', (
         ('session', session),
         ('Owner', Owner),
