@@ -1,10 +1,14 @@
 from sqlalchemy import orm, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 
+from aegir import settings
 
 ModelBase = declarative_base()
 
-engine = create_engine('postgresql://postgres@localhost/aegir')
+engine = create_engine(
+    f'postgresql://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}'
+    f'@{settings.POSTGRES_HOST}/{settings.POSTGRES_PASSWORD}'
+)
 
 ModelBase.metadata.bind = engine
 
