@@ -7,6 +7,9 @@ from aegir.core.utils import log
 class RequestHandler(tornado.web.RequestHandler):
     """Base request handle class used to pre configure handlers."""
 
+    def __str__(self):
+        return self.__class__.__name__
+
     def set_default_headers(self):
         """Set content type as application/json."""
         self.set_header('Content-Type', 'application/json; charset=UTF-8')
