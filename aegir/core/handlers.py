@@ -1,6 +1,7 @@
-import logging
 import json
 import tornado
+
+from aegir.core.utils import log
 
 
 class RequestHandler(tornado.web.RequestHandler):
@@ -12,11 +13,11 @@ class RequestHandler(tornado.web.RequestHandler):
 
     def prepare(self):
         """Parse request body to dict at request begin. """
-        logging.info(f'{self} request started.')
+        log.info(f'{self} request started.')
 
         try:
             if self.request.body:
-                logging.debug(f'{self} request body: {self.request.body}')
+                log.debug(f'{self} request body: {self.request.body}')
 
                 json_data = json.loads(self.request.body)
                 self.request.arguments.update(json_data)
@@ -26,14 +27,14 @@ class RequestHandler(tornado.web.RequestHandler):
 
     def finish(self, chunk=None):
         """Log request finished status."""
-        logging.info(f'{self} request finished.')
+        log.info(f'{self} request finished.')
         return super().finish(chunk)
 
     def write_error(self, status_code, **kwargs):
         """Write error logging message if it exists in kwargs."""
         message = kwargs.get('message')
         if message:
-            logging.error(message)
+            log.error(message)
 
         return super().write_error(status_code, **kwargs)
 

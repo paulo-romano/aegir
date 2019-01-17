@@ -80,7 +80,7 @@ class TestRequestHandler:
     def test_write_error_must_log_message(self, mocker):
         message = 'Wrong side of haven'
         status_code = 500
-        logging_error = mocker.patch('logging.error')
+        logging_error = mocker.patch('aegir.core.utils.log.error')
 
         super_write_error = \
             mocker.patch.object(tornado.web.RequestHandler, 'write_error')
