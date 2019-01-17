@@ -13,6 +13,7 @@ def db():
 
 
 def make_engine(database=''):
+    """Create connection to database."""
     return create_engine(f'postgresql://postgres@localhost/{database}',
                          echo=False)
 
@@ -28,6 +29,7 @@ def create_database():
 
 
 def create_database_extensions():
+    """Create postgres extensions on project database."""
     engine = make_engine(settings.POSTGRES_DATABASE)
     conn = engine.connect()
     conn.execute('CREATE EXTENSION postgis')
@@ -36,7 +38,8 @@ def create_database_extensions():
 
 
 @db.command(
-    name='create'
+    name='create',
+    help='Create and configure the project database.'
 )
 def create():
     create_database()
