@@ -13,6 +13,13 @@ class Owner(ModelBase):
     name = Column(String(255), nullable=False)
     document = Column(String(18), unique=True, nullable=False)
 
+    @property
+    def as_dict(self):
+        return {
+            'ownerName': self.name,
+            'document': self.document
+        }
+
 
 class PDV(ModelBase):
     __tablename__ = 'pdv'
