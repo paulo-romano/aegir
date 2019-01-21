@@ -7,7 +7,7 @@ ModelBase = declarative_base()
 
 engine = create_engine(
     f'postgresql://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}'
-    f'@{settings.POSTGRES_HOST}/{settings.POSTGRES_PASSWORD}'
+    f'@{settings.POSTGRES_HOST}/{settings.POSTGRES_DATABASE}'
 )
 
 ModelBase.metadata.bind = engine
