@@ -12,14 +12,7 @@ class TestRepository:
         with Repository(mocker.MagicMock()) as repository:
             assert isinstance(repository, Repository) is True
 
-    def test_must_close_session_on_dunder_exit(
-            self, mocked_sqlalchemy_session):
-        with Repository(mocked_sqlalchemy_session) as repository:
-            assert isinstance(repository, Repository) is True
-
-        assert mocked_sqlalchemy_session.close.called is True
-
-    def test_must_commit_work_on_exit_and_close_session(
+    def test_must_commit_work_on_dunder_exit(
             self, mocker, mocked_sqlalchemy_session):
         mocked_log = mocker.patch('aegir.core.repositories.log')
         with Repository(mocked_sqlalchemy_session) as repository:
@@ -30,9 +23,7 @@ class TestRepository:
         assert mocker.call('Work commited.') in \
             mocked_log.debug.call_args_list
 
-        assert mocked_sqlalchemy_session.close.called is True
-
-    def test_must_rollback_and_close_session_on_error(
+    def test_must_rollback_on_error(
             self, mocker, mocked_sqlalchemy_session):
         mocked_log = mocker.patch('aegir.core.repositories.log')
         mocked_sqlalchemy_session.commit.side_effect = Exception
@@ -44,8 +35,6 @@ class TestRepository:
         assert mocker.call('Error while commit work.') in \
             mocked_log.exception.call_args_list
         assert mocked_sqlalchemy_session.rollback.called is True
-
-        assert mocked_sqlalchemy_session.close.called is True
 
 
 class TestOwnerRepository:

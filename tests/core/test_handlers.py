@@ -94,3 +94,19 @@ class TestRequestHandler:
         assert super_write_error.called is True
         assert mocker.call(status_code, message=message) in \
             super_write_error.call_args_list
+
+    def test_finish_must_close_sqlalchemy_session(self, mocker):
+        mocked_session = \
+            mocker.patch('aegir.core.handlers.session', mocker.MagicMock())
+
+        mocker.patch('tornado.web.RequestHandler.flush')
+
+        mocked_log = mocker.patch('aegir.core.handlers.log')
+
+        handler = RequestHandler(mocker.MagicMock(), mocker.MagicMock())
+        handler.finish()
+
+        assert mocked_session.close.called is True
+        assert mocked_log.debug.called is True
+        assert mocker.call('SQLAlchemy session closed.') \
+            in mocked_log.debug.call_args_list

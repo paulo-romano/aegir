@@ -2,6 +2,7 @@ import json
 import tornado
 
 from aegir.core.utils import log
+from aegir.core.db import session
 
 
 class RequestHandler(tornado.web.RequestHandler):
@@ -30,6 +31,8 @@ class RequestHandler(tornado.web.RequestHandler):
 
     def finish(self, chunk=None):
         """Log request finished status."""
+        session.close()
+        log.debug('SQLAlchemy session closed.')
         log.info(f'{self} request finished.')
         return super().finish(chunk)
 

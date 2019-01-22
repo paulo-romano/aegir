@@ -16,8 +16,6 @@ class Repository:
         except Exception:
             log.exception('Error while commit work.')
             self.session.rollback()
-        finally:
-            self.session.close()
 
 
 class OwnerRepository(Repository):
