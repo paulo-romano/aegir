@@ -22,6 +22,7 @@ class OwnerRepository(Repository):
     async def create(self, name, document):
         owner = Owner(name=name, document=document)
         self.session.add(owner)
+        self.session.flush()
         return owner
 
     async def create_from_pdv_dict(self, pdv_dict):

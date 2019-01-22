@@ -63,6 +63,7 @@ class TestOwnerRepository:
         assert mocked_sqlalchemy_session.add.called is True
         assert mocker.call(expected_owner) in \
             mocked_sqlalchemy_session.add.call_args_list
+        assert mocked_sqlalchemy_session.flush.called is True
         assert owner == expected_owner
 
     async def test_must_create_from_pdv_dict(
