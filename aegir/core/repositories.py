@@ -25,7 +25,14 @@ class OwnerRepository(Repository):
         self.session.flush()
         return owner
 
-    async def create_from_pdv_dict(self, pdv_dict):
-        return await self.create(
-            pdv_dict['ownerName'], pdv_dict['document']
-        )
+    async def get_by_document(self, document):
+        return self.session.query(Owner).filter_by(document=document).first()
+
+    async def get_or_create_from_pdv_dict(self, pdv_dict):
+        owner = await self.get_by_document(document=pdv_dict['document'])
+        if not owner:
+            owner = await self.create(
+                pdv_dict['ownerName'], pdv_dict['document']
+            )
+
+        return owner

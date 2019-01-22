@@ -1,3 +1,5 @@
+import asyncio
+
 from aegir.core.models import Owner
 from aegir.core.repositories import Repository, OwnerRepository
 
@@ -66,6 +68,22 @@ class TestOwnerRepository:
         assert mocked_sqlalchemy_session.flush.called is True
         assert owner == expected_owner
 
+    def test_must_filter_by_document(self, mocker, mocked_sqlalchemy_session):
+        document = 'doctest112'
+
+        mocked_sqlalchemy_session.query = mocker.MagicMock()
+
+        with OwnerRepository(mocked_sqlalchemy_session) as repo:
+            asyncio.run(repo.get_by_document(document))
+
+        assert mocked_sqlalchemy_session.query.called is True
+        assert mocker.call(Owner) in \
+            mocked_sqlalchemy_session.query.call_args_list
+        assert mocked_sqlalchemy_session.query.return_value.filter_by.called is True
+        assert mocker.call(document=document) in \
+            mocked_sqlalchemy_session.query.return_value.filter_by. \
+            call_args_list
+
     async def test_must_create_from_pdv_dict(
             self, mocker, mocked_sqlalchemy_session):
         pdv_data = {
@@ -80,7 +98,7 @@ class TestOwnerRepository:
         )
 
         with OwnerRepository(mocked_sqlalchemy_session) as repo:
-            owner = await repo.create_from_pdv_dict(pdv_data)
+            owner = await repo.get_or_create_from_pdv_dict(pdv_data)
 
         assert owner == expected_owner
         assert mocked_create.called is True
