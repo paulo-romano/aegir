@@ -1,4 +1,4 @@
-import asyncio
+import pytest
 
 from aegir.core.models import Owner
 from aegir.core.repositories import Repository, OwnerRepository
@@ -40,16 +40,7 @@ class TestRepository:
 
 
 class TestOwnerRepository:
-    @staticmethod
-    def mock_owner(mocker, owner_data):
-        expected_owner = Owner(**owner_data)
-
-        mocked_owner_class = \
-            mocker.patch('aegir.core.models.Owner', mocker.MagicMock())
-        mocked_owner_class.__new__.return_value = expected_owner
-
-        return mocked_owner_class, expected_owner
-
+    @pytest.mark.asyncio
     async def test_must_create_owner(
             self, mocker, mocked_sqlalchemy_session):
         owner_data = {
@@ -57,7 +48,11 @@ class TestOwnerRepository:
             'document': 'docteste',
         }
 
-        mocked_owner_class, expected_owner = self.mock_owner(owner_data)
+        expected_owner = Owner(**owner_data)
+
+        mocker.patch('aegir.core.models.Owner', mocker.MagicMock())
+
+        mocker.patch.object(Owner, '__new__', return_value=expected_owner)
 
         with OwnerRepository(mocked_sqlalchemy_session) as repo:
             owner = await repo.create(**owner_data)
@@ -68,33 +63,46 @@ class TestOwnerRepository:
         assert mocked_sqlalchemy_session.flush.called is True
         assert owner == expected_owner
 
-    def test_must_filter_by_document(self, mocker, mocked_sqlalchemy_session):
+    @pytest.mark.asyncio
+    async def test_must_filter_by_document(
+            self, mocker, mocked_sqlalchemy_session):
         document = 'doctest112'
 
         mocked_sqlalchemy_session.query = mocker.MagicMock()
 
         with OwnerRepository(mocked_sqlalchemy_session) as repo:
-            asyncio.run(repo.get_by_document(document))
+            await repo.get_by_document(document)
 
         assert mocked_sqlalchemy_session.query.called is True
         assert mocker.call(Owner) in \
             mocked_sqlalchemy_session.query.call_args_list
-        assert mocked_sqlalchemy_session.query.return_value.filter_by.called is True
+        assert mocked_sqlalchemy_session.query.return_value.filter_by.called \
+            is True
         assert mocker.call(document=document) in \
             mocked_sqlalchemy_session.query.return_value.filter_by. \
             call_args_list
 
-    async def test_must_create_from_pdv_dict(
-            self, mocker, mocked_sqlalchemy_session):
+    @pytest.mark.asyncio
+    async def test_get_or_create_from_pdv_dict_must_create(
+            self, mocker, mocked_sqlalchemy_session, mocked_coroutine_factory):
         pdv_data = {
             'ownerName': 'Test',
             'document': 'docteste',
         }
 
-        expected_owner = 'expected_owner'
+        expected_owner = Owner(
+            name=pdv_data['ownerName'], document=pdv_data['document']
+        )
 
-        mocked_create = mocker.patch.object(
-            OwnerRepository, 'create', return_value=expected_owner
+        mocker.patch(
+            'aegir.core.repositories.OwnerRepository.get_by_document',
+            mocked_coroutine_factory(None)
+        )
+
+        mocked_create = mocker.patch(
+            'aegir.core.repositories.OwnerRepository.create',
+
+            side_effect=mocked_coroutine_factory(expected_owner)
         )
 
         with OwnerRepository(mocked_sqlalchemy_session) as repo:
