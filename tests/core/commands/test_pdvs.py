@@ -1,5 +1,4 @@
 import click
-import pytest
 
 from aegir.core.commands import pdvs
 
@@ -22,9 +21,3 @@ class TestLoadCommand:
         pdvs_group = getattr(pdvs, 'pdvs')
         load_command = getattr(pdvs, 'load')
         assert pdvs_group.commands['load'] == load_command
-
-    def test_load_command_must_rise_error(self):
-        load_command = getattr(pdvs, 'load')
-
-        with pytest.raises(NotImplementedError):
-            load_command.callback()
