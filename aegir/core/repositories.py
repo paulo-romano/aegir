@@ -1,4 +1,5 @@
-from aegir.core.models import Owner
+from aegir.core import parsers
+from aegir.core.models import Owner, PDV
 from aegir.core.utils import log
 
 
@@ -36,3 +37,29 @@ class OwnerRepository(Repository):
             )
 
         return owner
+
+
+class PDVRepository(Repository):
+    async def create(self, owner, name, coverage_area, address):
+        pdv = PDV(
+            owner=owner,
+            name=name,
+            coverage_area=await parsers.geojson_to_wtk(coverage_area),
+            address=await parsers.geojson_to_wtk(address),
+        )
+        self.session.add(pdv)
+        self.session.flush()
+        return pdv
+
+    async def create_from_pdv_dict(self, pdv_dict):
+        with OwnerRepository(self.session) as repo:
+            owner = await repo.get_or_create_from_pdv_dict(pdv_dict)
+
+        pdv = await self.create(
+            owner=owner,
+            name=pdv_dict['tradingName'],
+            coverage_area=pdv_dict['coverageArea'],
+            address=pdv_dict['address'],
+        )
+
+        return pdv

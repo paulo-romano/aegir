@@ -1,7 +1,7 @@
 import pytest
 
-from aegir.core.models import Owner
-from aegir.core.repositories import Repository, OwnerRepository
+from aegir.core.models import Owner, PDV
+from aegir.core.repositories import Repository, OwnerRepository, PDVRepository
 
 
 class TestRepository:
@@ -48,20 +48,13 @@ class TestOwnerRepository:
             'document': 'docteste',
         }
 
-        expected_owner = Owner(**owner_data)
-
         mocker.patch('aegir.core.models.Owner', mocker.MagicMock())
 
-        mocker.patch.object(Owner, '__new__', return_value=expected_owner)
-
         with OwnerRepository(mocked_sqlalchemy_session) as repo:
-            owner = await repo.create(**owner_data)
+            await repo.create(**owner_data)
 
         assert mocked_sqlalchemy_session.add.called is True
-        assert mocker.call(expected_owner) in \
-            mocked_sqlalchemy_session.add.call_args_list
         assert mocked_sqlalchemy_session.flush.called is True
-        assert owner == expected_owner
 
     @pytest.mark.asyncio
     async def test_must_filter_by_document(
@@ -112,3 +105,40 @@ class TestOwnerRepository:
         assert mocked_create.called is True
         assert mocker.call(pdv_data['ownerName'], pdv_data['document']) in \
             mocked_create.call_args_list
+
+
+class TestPDVRepository:
+    @pytest.mark.asyncio
+    async def test_must_create_pdv(
+            self, mocker, mocked_sqlalchemy_session):
+        mocked_owner = Owner(name='Test Owner', document='teste124')
+        pdv_data = {
+            'owner': mocked_owner,
+            'name': 'Test',
+            'coverage_area': {
+                'type': 'MultiPolygon',
+                'coordinates': [
+                    [[[30, 20], [45, 40], [10, 40], [30, 20]]],
+                    [[[15, 5], [40, 10], [10, 20], [5, 10], [15, 5]]]
+                ]
+            },
+            'address': {
+                'type': 'Point',
+                'coordinates': [-46.57421, -21.785741]
+            }
+        }
+
+        expected_pdv = PDV(**pdv_data)
+
+        mocker.patch('aegir.core.models.PDV', mocker.MagicMock())
+
+        mocker.patch.object(PDV, '__new__', return_value=expected_pdv)
+
+        with PDVRepository(mocked_sqlalchemy_session) as repo:
+            owner = await repo.create(**pdv_data)
+
+        assert mocked_sqlalchemy_session.add.called is True
+        assert mocker.call(expected_pdv) in \
+            mocked_sqlalchemy_session.add.call_args_list
+        assert mocked_sqlalchemy_session.flush.called is True
+        assert owner == expected_pdv
