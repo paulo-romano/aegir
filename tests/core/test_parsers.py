@@ -4,7 +4,7 @@ from geoalchemy2 import WKBElement
 from aegir.core import parsers
 
 
-class TestGeojsonToWTK:
+class TestGeojsonToWKT:
     @pytest.mark.asyncio
     @pytest.mark.parametrize('value, expected_value', (
         ({
@@ -25,10 +25,10 @@ class TestGeojsonToWTK:
         ),
     ))
     async def test_must_parse_value(self, value, expected_value):
-        assert await parsers.geojson_to_wtk(value) == expected_value
+        assert await parsers.geojson_to_wkt(value) == expected_value
 
 
-class TestWKBToGeojson:
+class TestToGeojson:
     @pytest.mark.asyncio
     @pytest.mark.parametrize('element, expected_value', (
         (
@@ -47,12 +47,29 @@ class TestWKBToGeojson:
             }
         ),
         (
+            'MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), '
+            '((15 5, 40 10, 10 20, 5 10, 15 5)))',
+            {
+                'type': 'MultiPolygon', 'coordinates': [
+                (((30.0, 20.0), (45.0, 40.0), (10.0, 40.0), (30.0, 20.0)),),
+                (((15.0, 5.0), (40.0, 10.0), (10.0, 20.0), (5.0, 10.0),
+                  (15.0, 5.0)),)]
+            }
+        ),
+        (
             WKBElement('0101000000a18499b67f4947c058207a5226c935c0'),
             {
                 "type": "Point",
                 "coordinates": (-46.57421, -21.785741)
             }
-         ),
+        ),
+        (
+            'POINT (-46.57421 -21.785741)',
+            {
+                "type": "Point",
+                "coordinates": (-46.57421, -21.785741)
+            }
+        ),
     ))
     async def test_must_parse_element(self, element, expected_value):
-        assert await parsers.wkb_to_geojson(element) == expected_value
+        assert await parsers.to_geojson(element) == expected_value

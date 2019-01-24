@@ -45,7 +45,7 @@ class PDV(ModelBase):
         base.update({
             'id': str(self.id),
             'tradingName': self.name,
-            'coverageArea': await parsers.wkb_to_geojson(self.coverage_area),
-            'address': await parsers.wkb_to_geojson(self.address)
+            'coverageArea': await parsers.to_geojson(self.coverage_area),
+            'address': await parsers.to_geojson(self.address)
         })
         return base

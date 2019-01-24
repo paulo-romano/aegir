@@ -44,8 +44,8 @@ class PDVRepository(Repository):
         pdv = PDV(
             owner=owner,
             name=name,
-            coverage_area=await parsers.geojson_to_wtk(coverage_area),
-            address=await parsers.geojson_to_wtk(address),
+            coverage_area=await parsers.geojson_to_wkt(coverage_area),
+            address=await parsers.geojson_to_wkt(address),
         )
         self.session.add(pdv)
         self.session.flush()
