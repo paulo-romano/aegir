@@ -38,3 +38,38 @@ python aegir
 - pdvs load <file_name>: Not implemented.
 - shell: Open an interactive python shell with Aegir context.
 - runserver: Execute http server. 
+
+## Running the server
+1. With aegir installed (see "How to execute managements commands"), execute the server.
+```bash
+python aegir runserver
+```
+
+### Creating a new PDV using REST
+```bash
+curl -X POST \
+  http://127.0.0.1:8000/api/pdv \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
+  -d '{
+  "pdvs": [ 
+    {
+        "id": 1, 
+        "tradingName": "Adega da Cerveja - Pinheiros",
+        "ownerName": "Zé da Silva",
+        "document": "1432132123891/0001",
+        "coverageArea": { 
+          "type": "MultiPolygon", 
+          "coordinates": [
+            [[[30, 20], [45, 40], [10, 40], [30, 20]]], 
+            [[[15, 5], [40, 10], [10, 20], [5, 10], [15, 5]]]
+          ]
+        },
+        "address": { 
+          "type": "Point",
+          "coordinates": [-46.57421, -21.785741]
+        }
+    }
+  ]
+}'
+```
