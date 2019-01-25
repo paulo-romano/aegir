@@ -44,12 +44,17 @@ class PDVRepository(Repository):
         pdv = PDV(
             owner=owner,
             name=name,
-            coverage_area=await parsers.geojson_to_wkt(coverage_area),
-            address=await parsers.geojson_to_wkt(address),
+            coverage_area=parsers.geojson_to_wkt(coverage_area),
+            address=parsers.geojson_to_wkt(address),
         )
         self.session.add(pdv)
         self.session.flush()
         return pdv
+
+    async def get_by_id(self, pdv_id):
+        return self.session.query(PDV) \
+            .filter_by(id=pdv_id) \
+            .first()
 
     async def get_by_owner_and_name(self, owner, name):
         return self.session.query(PDV)\

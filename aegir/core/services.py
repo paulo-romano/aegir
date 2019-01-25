@@ -10,3 +10,10 @@ async def create_pdvs(pdvs):
             created.append(str(pdv_object.id))
 
     return created
+
+
+async def get_pdv_by_id(pdv_id):
+    with PDVRepository(session) as repository:
+        pdv = await repository.get_by_id(pdv_id)
+
+    return pdv

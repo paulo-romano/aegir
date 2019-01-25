@@ -54,13 +54,13 @@ class PDV(ModelBase):
         return value
 
     @property
-    async def as_dict(self):
+    def as_dict(self):
         base = self.owner.as_dict
         base.pop('id', None)
         base.update({
             'id': str(self.id),
             'tradingName': self.name,
-            'coverageArea': await parsers.to_geojson(self.coverage_area),
-            'address': await parsers.to_geojson(self.address)
+            'coverageArea': parsers.to_geojson(self.coverage_area),
+            'address': parsers.to_geojson(self.address)
         })
         return base

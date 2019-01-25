@@ -1,6 +1,7 @@
 import pytest
 
 from aegir.core import services
+from aegir.core.models import PDV
 
 
 class TestCreatePDVs:
@@ -27,3 +28,18 @@ class TestCreatePDVs:
         )
 
         assert expected_id in await services.create_pdvs(pdvs)
+
+
+class TestGetPDVByID:
+    @pytest.mark.asyncio
+    async def test_must_get_pdv_by_id(self, mocker, mocked_coroutine_factory):
+        pdv_id = 'fake_id'
+        expected_pdv = PDV()
+        mocker.patch(
+            'aegir.core.repositories.PDVRepository.get_by_id',
+            mocked_coroutine_factory(expected_pdv)
+        )
+
+        pdv = await services.get_pdv_by_id(pdv_id)
+
+        assert pdv == expected_pdv

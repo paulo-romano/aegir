@@ -5,7 +5,6 @@ from aegir.core import parsers
 
 
 class TestGeojsonToWKT:
-    @pytest.mark.asyncio
     @pytest.mark.parametrize('value, expected_value', (
         ({
           "type": "MultiPolygon",
@@ -24,12 +23,11 @@ class TestGeojsonToWKT:
          'POINT (-46.57421 -21.785741)'
         ),
     ))
-    async def test_must_parse_value(self, value, expected_value):
-        assert await parsers.geojson_to_wkt(value) == expected_value
+    def test_must_parse_value(self, value, expected_value):
+        assert parsers.geojson_to_wkt(value) == expected_value
 
 
 class TestToGeojson:
-    @pytest.mark.asyncio
     @pytest.mark.parametrize('element, expected_value', (
         (
             WKBElement('010600000002000000010300000001000000040000000000000000'
@@ -72,5 +70,5 @@ class TestToGeojson:
             }
         ),
     ))
-    async def test_must_parse_element(self, element, expected_value):
-        assert await parsers.to_geojson(element) == expected_value
+    def test_must_parse_element(self, element, expected_value):
+        assert parsers.to_geojson(element) == expected_value

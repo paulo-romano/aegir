@@ -142,3 +142,43 @@ class TestPDVRepository:
             mocked_sqlalchemy_session.add.call_args_list
         assert mocked_sqlalchemy_session.flush.called is True
         assert owner == expected_pdv
+
+    @pytest.mark.aaynxio
+    async def test_must_get_instead_of_create(
+            self, mocker, mocked_sqlalchemy_session, mocked_coroutine_factory):
+        expected_pdv = PDV()
+
+        mocker.patch(
+            'aegir.core.repositories.PDVRepository'
+            '.get_by_owner_and_name',
+            mocked_coroutine_factory(expected_pdv)
+        )
+
+        mocked_create = mocker.patch(
+            'aegir.core.repositories.PDVRepository.create',
+        )
+
+        with PDVRepository(mocked_sqlalchemy_session) as repo:
+            pdv = await repo.get_or_create_from_pdv_dict(mocker.MagicMock())
+
+        assert pdv == expected_pdv
+        assert mocked_create.called is False
+
+    @pytest.mark.asyncio
+    async def test_must_filter_by_id(
+            self, mocker, mocked_sqlalchemy_session):
+        pdv_id = 'fakeidt112'
+
+        mocked_sqlalchemy_session.query = mocker.MagicMock()
+
+        with PDVRepository(mocked_sqlalchemy_session) as repo:
+            await repo.get_by_id(pdv_id)
+
+        assert mocked_sqlalchemy_session.query.called is True
+        assert mocker.call(PDV) in \
+            mocked_sqlalchemy_session.query.call_args_list
+        assert mocked_sqlalchemy_session.query.return_value.filter_by.called \
+            is True
+        assert mocker.call(id=pdv_id) in \
+            mocked_sqlalchemy_session.query.return_value.filter_by. \
+            call_args_list

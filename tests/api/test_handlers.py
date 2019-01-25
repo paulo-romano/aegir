@@ -2,6 +2,8 @@ import json
 
 import pytest
 
+from aegir.core.exceptions import NotFound
+from aegir.core.models import PDV as PDVModel
 from aegir.api.handlers import PDV
 
 
@@ -39,3 +41,39 @@ class TestPDVPost:
         assert mocker.call(json.dumps({
             'created': [expected_id]
         })) in mocked_write.call_args_list
+
+
+class TestPDVGetByID:
+    @pytest.mark.asyncio
+    async def test_must_get_pdv_by_id(self, mocker, mocked_coroutine_factory):
+        expected_pdv = PDVModel()
+
+        mocker.patch(
+            'aegir.core.services.get_pdv_by_id',
+            mocked_coroutine_factory(expected_pdv)
+        )
+
+        mocker.patch('aegir.core.models.PDV.as_dict', {})
+
+        mocked_get_argument = mocker.patch.object(PDV, 'get_argument')
+
+        handler = PDV(mocker.MagicMock(), mocker.MagicMock())
+        await handler.get()
+
+        assert mocked_get_argument.called is True
+        assert mocker.call('id') in mocked_get_argument.call_args_list
+
+    @pytest.mark.asyncio
+    async def test_must_rise_not_found_error(
+            self, mocker, mocked_coroutine_factory):
+
+        mocker.patch(
+            'aegir.core.services.get_pdv_by_id',
+            mocked_coroutine_factory(None)
+        )
+
+        mocker.patch.object(PDV, 'get_argument')
+
+        handler = PDV(mocker.MagicMock(), mocker.MagicMock())
+        with pytest.raises(NotFound):
+            await handler.get()
