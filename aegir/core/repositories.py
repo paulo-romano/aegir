@@ -30,10 +30,10 @@ class OwnerRepository(Repository):
         return self.session.query(Owner).filter_by(document=document).first()
 
     async def get_or_create_from_pdv_dict(self, pdv_dict):
-        owner = await self.get_by_document(document=pdv_dict['document'])
+        owner = await self.get_by_document(document=pdv_dict.get('document'))
         if not owner:
             owner = await self.create(
-                pdv_dict['ownerName'], pdv_dict['document']
+                pdv_dict.get('ownerName'), pdv_dict.get('document')
             )
 
         return owner
@@ -57,9 +57,9 @@ class PDVRepository(Repository):
 
         pdv = await self.create(
             owner=owner,
-            name=pdv_dict['tradingName'],
-            coverage_area=pdv_dict['coverageArea'],
-            address=pdv_dict['address'],
+            name=pdv_dict.get('tradingName'),
+            coverage_area=pdv_dict.get('coverageArea'),
+            address=pdv_dict.get('address'),
         )
 
         return pdv

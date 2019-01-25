@@ -1,10 +1,11 @@
 from geoalchemy2 import Geography
 from sqlalchemy import Column, String, ForeignKey, text
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 
 from aegir.core import parsers
 from aegir.core.db import ModelBase
+from aegir.core.exceptions import BadRequest
 
 
 class Owner(ModelBase):
@@ -15,6 +16,13 @@ class Owner(ModelBase):
     name = Column(String(255), nullable=False)
     document = Column(String(18), unique=True, nullable=False)
     pdvs = relationship('PDV', back_populates="owner")
+
+    @validates('name', 'document')
+    def required(self, field, value):
+        if not value:
+            raise BadRequest(f'Field "{field}" is required.')
+
+        return value
 
     @property
     def as_dict(self):
@@ -37,6 +45,13 @@ class PDV(ModelBase):
                      nullable=False)
     coverage_area = Column(Geography(geometry_type='MULTIPOLYGON', srid=4326),
                            nullable=False)
+
+    @validates('owner_id', 'name', 'address', 'coverage_area')
+    def required(self, field, value):
+        if not value:
+            raise BadRequest(f'Field "{field}" is required.')
+
+        return value
 
     @property
     async def as_dict(self):
