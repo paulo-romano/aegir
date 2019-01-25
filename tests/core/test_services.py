@@ -21,7 +21,8 @@ class TestCreatePDVs:
         mocker.patch('aegir.core.services.session', mocked_sqlalchemy_session)
 
         mocker.patch(
-            'aegir.core.repositories.PDVRepository.create_from_pdv_dict',
+            'aegir.core.repositories.PDVRepository'
+            '.get_or_create_from_pdv_dict',
             mocked_coroutine_factory(fake_pdv)
         )
 

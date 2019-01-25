@@ -51,15 +51,25 @@ class PDVRepository(Repository):
         self.session.flush()
         return pdv
 
-    async def create_from_pdv_dict(self, pdv_dict):
+    async def get_by_owner_and_name(self, owner, name):
+        return self.session.query(PDV)\
+            .filter_by(owner=owner, name=name)\
+            .first()
+
+    async def get_or_create_from_pdv_dict(self, pdv_dict):
         with OwnerRepository(self.session) as repo:
             owner = await repo.get_or_create_from_pdv_dict(pdv_dict)
 
-        pdv = await self.create(
-            owner=owner,
-            name=pdv_dict.get('tradingName'),
-            coverage_area=pdv_dict.get('coverageArea'),
-            address=pdv_dict.get('address'),
+        pdv = await self.get_by_owner_and_name(
+            owner=owner, name=pdv_dict.get('tradingName')
         )
+
+        if not pdv:
+            pdv = await self.create(
+                owner=owner,
+                name=pdv_dict.get('tradingName'),
+                coverage_area=pdv_dict.get('coverageArea'),
+                address=pdv_dict.get('address'),
+            )
 
         return pdv
