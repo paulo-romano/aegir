@@ -5,19 +5,28 @@ This project is a simple beer delivery app backend using python and postgres, im
 - I am using postgres + postgis to save and handle with geo localization.
 - I did not used a project boilerplate. The structure and files was creates considering my experience with other frameworks (Django, Flask, etc) and some lessons learned with past mistakes.
 - [SQLAlchemy](https://www.sqlalchemy.org/) and [GeoAlchemy2](https://geoalchemy-2.readthedocs.io/en/latest/) as ORM to query and manipulate data.
-- [Tornado](https://www.tornadoweb.org/en/stable/) to create the RESTful api and serve it.  
+- [Tornado](https://www.tornadoweb.org/en/stable/) to create the RESTful api and serve it.
 
-## How to execute managements commands
-1. Create and activate virtual env
-1. Install Aegir tool on your virtual environment.
-2. Configure your local instance using .env file
-3. Call aegir command to see a list with all commands.
+## How to configure docker services
+
+## How to execute using docker and docker-compose
+1. Install docker and docker compose. You can find instructions to install on ubuntu 18.04 linux in [this](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04) (Docker) and [this](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04) (Docker compose). You can chose a different version and linux distribution in posts page.
+2. Configure docker services (See "How to configure docker services" section).
+3. Build the images and services.
+4. Start services in background.
+5. If is the first time, you should create the database. Obs.: Wait to postgres services start completely, a.k.a, "database system is ready to accept connections" log entry.
 
 ```bash
-python -m venv .venv && source .venv/bin/activate
-pip install .
-cp contrib/env.sample .env
-python aegir
+docker-compose build
+docker-compose up -d
+docker-compose run api python -m aegir db create
+```  
+
+## How to execute managements commands
+1. Call aegir command to see a list with all commands.
+
+```bash
+docker-compose run api python -m aegir
 ``` 
 
 ### List of management commands
@@ -26,33 +35,11 @@ python aegir
 - shell: Open an interactive python shell with Aegir context.
 - runserver: Execute http server. 
 
-## How to configure to local development
-1. Create and activate virtual env
-2. Install dependencies
-3. Configure your local instance, using .env file.
-4. Create the database (see "How to execute managements commands" section)
-5. Make your magic! :)
-6. Execute tests
-
-```bash
-python -m venv .venv && source .venv/bin/activate
-cp contrib/env.sample .env
-python aegir db create
-pip install -r requirements-dev.txt
-tox
-```
-
 ## How to load test data
 1. With Aegir installed (see "How to execute managements commands") and database created, execute the fallowing command.
 
 ```bash
-python aegir pdvs load <json file path (see sample at contri/data.sample.json)>
-```
-
-## Running the server
-1. With Aegir installed (see "How to execute managements commands") and database created, execute the server.
-```bash
-python aegir runserver
+docker-compose run api python -m aegir pdvs load <json file path (see sample at contri/data.sample.json)>
 ```
 
 ### Creating a new PDV using REST
@@ -82,4 +69,28 @@ curl -X POST \
     }
   ]
 }'
+```
+
+## How to configure to local development
+1. Create and activate virtual env
+2. Install dependencies
+3. Configure your local instance, using .env file.
+4. Install Aegir on virtual env.
+4. Create the database.
+5. Make your magic! :)
+6. Execute tests
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install . --editable
+cp contrib/env.sample .env
+python -m aegir db create
+pip install -r requirements-dev.txt
+tox
+```
+
+## Running the local server
+1. With Aegir installed and database created (see "How to configure to local development"), execute the server.
+```bash
+python -m aegir runserver
 ```
