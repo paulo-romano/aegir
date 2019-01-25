@@ -14,8 +14,11 @@ def db():
 
 def make_engine(database=''):
     """Create connection to database."""
-    return create_engine(f'postgresql://postgres@localhost/{database}',
-                         echo=False)
+    return create_engine(
+        f'postgresql://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}'
+        f'@{settings.POSTGRES_HOST}/{database}',
+        echo=False
+    )
 
 
 def create_database():
