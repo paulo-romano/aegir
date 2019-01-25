@@ -1,6 +1,7 @@
 import json
 import tornado
 
+from aegir.core.exceptions import BadRequest, AegirException
 from aegir.core.utils import log
 from aegir.core.db import session
 
@@ -26,8 +27,7 @@ class RequestHandler(tornado.web.RequestHandler):
                 json_data = json.loads(self.request.body)
                 self.request.arguments.update(json_data)
         except Exception:
-            message = 'Invalid request body.'
-            self.send_error(400, message=message)
+            raise BadRequest('Invalid request body.')
 
     def finish(self, chunk=None):
         """Log request finished status."""
@@ -38,11 +38,17 @@ class RequestHandler(tornado.web.RequestHandler):
 
     def write_error(self, status_code, **kwargs):
         """Write error logging message if it exists in kwargs."""
-        message = kwargs.get('message')
-        if message:
-            log.error(message)
+        exc_info = kwargs.get('exc_info')
+        if exc_info and issubclass(exc_info[0], AegirException):
+            status_code = exc_info[1].args[0]
+            message = exc_info[1].args[1]
+        else:
+            message = 'Unhandled error'
 
-        return super().write_error(status_code, **kwargs)
+        self.set_status(status_code)
+        return self.write({
+            'error': message,
+        })
 
 
 class MainHandler(RequestHandler):

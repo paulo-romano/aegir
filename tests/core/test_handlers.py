@@ -1,8 +1,8 @@
 import json
-import tornado
 
 import pytest
 
+from aegir.core.exceptions import BadRequest
 from aegir.core.handlers import RequestHandler
 
 
@@ -64,36 +64,16 @@ class TestRequestHandler:
         request = mocker.MagicMock()
         request.body = '{"message": "ok"}'
 
-        json_loads = mocker.patch('json.loads', side_effect=ex_class)
+        mocker.patch('json.loads', side_effect=ex_class)
 
-        send_error = mocker.patch.object(RequestHandler, 'send_error')
+        mocker.patch.object(RequestHandler, 'send_error')
 
         handler = RequestHandler(mocker.MagicMock(), request)
-        handler.prepare()
 
-        assert json_loads.called is True
+        with pytest.raises(BadRequest) as ex:
+            handler.prepare()
 
-        assert send_error.called is True
-        assert mocker.call(400, message='Invalid request body.') in \
-            send_error.call_args_list
-
-    def test_write_error_must_log_message(self, mocker):
-        message = 'Wrong side of haven'
-        status_code = 500
-        logging_error = mocker.patch('aegir.core.utils.log.error')
-
-        super_write_error = \
-            mocker.patch.object(tornado.web.RequestHandler, 'write_error')
-
-        handler = RequestHandler(mocker.MagicMock(), mocker.MagicMock())
-        handler.write_error(status_code, message=message)
-
-        assert logging_error.called is True
-        assert mocker.call(message) in logging_error.call_args_list
-
-        assert super_write_error.called is True
-        assert mocker.call(status_code, message=message) in \
-            super_write_error.call_args_list
+        assert ex.value.args[1] == 'Invalid request body.'
 
     def test_finish_must_close_sqlalchemy_session(self, mocker):
         mocked_session = \
