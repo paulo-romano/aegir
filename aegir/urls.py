@@ -8,5 +8,5 @@ url_patterns = [
 url_patterns += api_urls
 
 __all__ = [
-    url_patterns,
+    'url_patterns',
 ]

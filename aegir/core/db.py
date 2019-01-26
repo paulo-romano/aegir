@@ -16,7 +16,7 @@ session = orm.scoped_session(orm.sessionmaker())(bind=engine)
 
 
 __all__ = [
-    ModelBase,
-    engine,
-    session,
+    'ModelBase',
+    'engine',
+    'session',
 ]

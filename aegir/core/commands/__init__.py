@@ -17,5 +17,5 @@ aegir_commands.add_command(db_group)
 aegir_commands.add_command(runserver_command)
 
 __all__ = [
-    aegir_commands,
+    'aegir_commands',
 ]

@@ -9,6 +9,6 @@ def configure_log():
 log = logging.getLogger("tornado.application")
 
 __all__ = [
-    log,
-    configure_log
+    'log',
+    'configure_log',
 ]
