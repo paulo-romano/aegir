@@ -13,7 +13,7 @@ class TestCreatePDVs:
         expected_id = 'test_id'
 
         fake_pdv = mocker.MagicMock()
-        fake_pdv.id = expected_id
+        fake_pdv.public_id = expected_id
 
         pdv_dict = mocker.MagicMock()
 
@@ -36,7 +36,7 @@ class TestGetPDVByID:
         pdv_id = 'fake_id'
         expected_pdv = PDV()
         mocker.patch(
-            'aegir.core.repositories.PDVRepository.get_by_id',
+            'aegir.core.repositories.PDVRepository.get_by_public_id',
             mocked_coroutine_factory(expected_pdv)
         )
 

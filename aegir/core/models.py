@@ -1,5 +1,5 @@
 from geoalchemy2 import Geography
-from sqlalchemy import Column, String, ForeignKey, text
+from sqlalchemy import Column, String, ForeignKey, text, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -30,6 +30,7 @@ class PDV(ModelBase):
 
     id = Column(UUID(as_uuid=True), unique=True, nullable=False,
                 primary_key=True, server_default=text('gen_random_uuid()'))
+    public_id = Column(Integer, unique=True, nullable=False)
     owner_id = Column(ForeignKey('owner.id'), nullable=False)
     owner = relationship('Owner', back_populates='pdvs')
     name = Column(String(255), nullable=False)
@@ -40,10 +41,12 @@ class PDV(ModelBase):
 
     @property
     def as_dict(self):
-        base = self.owner.as_dict
-        base.pop('id', None)
+        base = {'id': self.public_id}
+        owner = self.owner.as_dict
+        owner.pop('id', None)
+        base.update(owner)
         base.update({
-            'id': str(self.id),
+            'id': str(self.public_id),
             'tradingName': self.name,
             'coverageArea': parsers.to_geojson(self.coverage_area),
             'address': parsers.to_geojson(self.address)

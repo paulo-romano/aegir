@@ -15,7 +15,7 @@ class TestPDVPost:
         expected_id = 'test_id'
 
         fake_pdv = mocker.MagicMock()
-        fake_pdv.id = expected_id
+        fake_pdv.public_id = expected_id
 
         pdv_dict = mocker.MagicMock()
 

@@ -42,8 +42,9 @@ class OwnerRepository(Repository):
 
 
 class PDVRepository(Repository):
-    async def create(self, owner, name, coverage_area, address):
+    async def create(self, public_id, owner, name, coverage_area, address):
         pdv = PDV(
+            public_id=public_id,
             owner=owner,
             name=name,
             coverage_area=parsers.geojson_to_wkt(coverage_area),
@@ -53,26 +54,22 @@ class PDVRepository(Repository):
         self.session.flush()
         return pdv
 
-    async def get_by_id(self, pdv_id):
+    async def get_by_public_id(self, pdv_id):
         return self.session.query(PDV) \
-            .filter_by(id=pdv_id) \
-            .first()
-
-    async def get_by_owner_and_name(self, owner, name):
-        return self.session.query(PDV)\
-            .filter_by(owner=owner, name=name)\
+            .filter_by(public_id=pdv_id) \
             .first()
 
     async def get_or_create_from_pdv_dict(self, pdv_dict):
         with OwnerRepository(self.session) as repo:
             owner = await repo.get_or_create_from_pdv_dict(pdv_dict)
 
-        pdv = await self.get_by_owner_and_name(
-            owner=owner, name=pdv_dict.get('tradingName')
+        pdv = await self.get_by_public_id(
+            pdv_dict.get('id')
         )
 
         if not pdv:
             pdv = await self.create(
+                public_id=pdv_dict.get('id'),
                 owner=owner,
                 name=pdv_dict.get('tradingName'),
                 coverage_area=pdv_dict.get('coverageArea'),

@@ -14,7 +14,12 @@ class PDV(RequestHandler):
     @validate_request(
         PDVKeyRequired,
         PDVFieldRequired(
-            'tradingName', 'ownerName', 'document', 'coverageArea', 'address'
+            'id',
+            'tradingName',
+            'ownerName',
+            'document',
+            'coverageArea',
+            'address',
         ),
         PDVGeoJSONFieldValidation('coverageArea', 'address'),
     )

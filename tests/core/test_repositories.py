@@ -113,6 +113,7 @@ class TestPDVRepository:
             self, mocker, mocked_sqlalchemy_session):
         mocked_owner = Owner(name='Test Owner', document='teste124')
         pdv_data = {
+            'public_id': 1,
             'owner': mocked_owner,
             'name': 'Test',
             'coverage_area': {
@@ -135,13 +136,13 @@ class TestPDVRepository:
         mocker.patch.object(PDV, '__new__', return_value=expected_pdv)
 
         with PDVRepository(mocked_sqlalchemy_session) as repo:
-            owner = await repo.create(**pdv_data)
+            pdv = await repo.create(**pdv_data)
 
         assert mocked_sqlalchemy_session.add.called is True
         assert mocker.call(expected_pdv) in \
             mocked_sqlalchemy_session.add.call_args_list
         assert mocked_sqlalchemy_session.flush.called is True
-        assert owner == expected_pdv
+        assert pdv == expected_pdv
 
     @pytest.mark.aaynxio
     async def test_must_get_instead_of_create(
@@ -165,20 +166,20 @@ class TestPDVRepository:
         assert mocked_create.called is False
 
     @pytest.mark.asyncio
-    async def test_must_filter_by_id(
+    async def test_must_filter_by_public_id(
             self, mocker, mocked_sqlalchemy_session):
         pdv_id = 'fakeidt112'
 
         mocked_sqlalchemy_session.query = mocker.MagicMock()
 
         with PDVRepository(mocked_sqlalchemy_session) as repo:
-            await repo.get_by_id(pdv_id)
+            await repo.get_by_public_id(pdv_id)
 
         assert mocked_sqlalchemy_session.query.called is True
         assert mocker.call(PDV) in \
             mocked_sqlalchemy_session.query.call_args_list
         assert mocked_sqlalchemy_session.query.return_value.filter_by.called \
             is True
-        assert mocker.call(id=pdv_id) in \
+        assert mocker.call(public_id=pdv_id) in \
             mocked_sqlalchemy_session.query.return_value.filter_by. \
             call_args_list
