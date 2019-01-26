@@ -9,6 +9,10 @@ from aegir.core.db import session
 class RequestHandler(tornado.web.RequestHandler):
     """Base request handle class used to pre configure handlers."""
 
+    def __init__(self, *args, **kwargs):
+        self._validation_messages = []
+        super().__init__(*args, **kwargs)
+
     def __str__(self):
         return self.__class__.__name__
 
@@ -47,8 +51,16 @@ class RequestHandler(tornado.web.RequestHandler):
 
         self.set_status(status_code)
         return self.write({
-            'error': message,
+            'errors': [message],
         })
+
+    def write_validation(self):
+        if self._validation_messages:
+            self.set_status(400)
+            self.write({
+                'errors': self._validation_messages,
+            })
+            return True
 
 
 class MainHandler(RequestHandler):

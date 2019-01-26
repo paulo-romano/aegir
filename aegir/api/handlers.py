@@ -1,11 +1,23 @@
 import json
 
+from aegir.api.validations import PDVKeyRequired, PDVFieldRequired, \
+    PDVGeoJSONFieldValidation
 from aegir.core import services
 from aegir.core.exceptions import NotFound
 from aegir.core.handlers import RequestHandler
+from aegir.core.validations import (
+    validate_request,
+)
 
 
 class PDV(RequestHandler):
+    @validate_request(
+        PDVKeyRequired,
+        PDVFieldRequired(
+            'tradingName', 'ownerName', 'document', 'coverageArea', 'address'
+        ),
+        PDVGeoJSONFieldValidation('coverageArea', 'address'),
+    )
     async def post(self):
         pdvs = self.request.arguments['pdvs']
 

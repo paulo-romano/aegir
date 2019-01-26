@@ -24,6 +24,11 @@ class TestPDVPost:
         request = mocker.MagicMock()
         request.arguments = {'pdvs': pdvs}
 
+        mocker.patch(
+            'aegir.core.validations.RequestPayloadValidation.__call__',
+            mocked_coroutine_factory(None)
+        )
+
         mocker.patch('aegir.core.services.session', mocked_sqlalchemy_session)
 
         mocker.patch(

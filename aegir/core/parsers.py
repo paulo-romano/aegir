@@ -1,15 +1,10 @@
 from shapely import geometry, wkt
 from geoalchemy2.shape import to_shape
 
-from aegir.core.exceptions import BadRequest
-
 
 def geojson_to_wkt(value):
     """Parse geojson element to WKT."""
-    try:
-        return geometry.shape(value).wkt
-    except Exception:
-        raise BadRequest(f'Value {value} is not a valid geojson element.')
+    return geometry.shape(value).wkt
 
 
 def to_geojson(element):
