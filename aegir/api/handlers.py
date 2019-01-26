@@ -16,9 +16,20 @@ class PDV(RequestHandler):
         }))
 
     async def get(self):
-        pdv_id = self.get_argument('id')
-        pdv = await services.get_pdv_by_id(pdv_id)
-        if not pdv:
-            raise NotFound(f'PDV with id "{pdv_id}" not found')
+        pdv_id = self.get_argument('id', None)
+        lat = self.get_argument('lat', None)
+        lng = self.get_argument('lng', None)
 
-        self.write(pdv.as_dict)
+        if pdv_id:
+            pdv = await services.get_pdv_by_id(pdv_id)
+            if not pdv:
+                raise NotFound(f'PDV with id "{pdv_id}" not found')
+
+            self.write(pdv.as_dict)
+
+        elif lat and lng:
+            pdvs = await services.filter_pdv_by_lat_and_long(lat, lng)
+
+            self.write({
+                'pdvs': [pdv.as_dict for pdv in pdvs]
+            })

@@ -1,3 +1,5 @@
+from sqlalchemy import func
+
 from aegir.core import parsers
 from aegir.core.models import Owner, PDV
 from aegir.core.utils import log
@@ -78,3 +80,15 @@ class PDVRepository(Repository):
             )
 
         return pdv
+
+    async def filter_pdv_by_lat_and_long(self, lat, lng):
+        return self.session.query(PDV) \
+            .filter(
+                func.ST_Intersects(
+                    func.Geometry(PDV.coverage_area),
+                    func.Geometry(
+                        func.ST_GeographyFromText(f'POINT({lat} {lng})')
+                    )
+                )
+            ) \
+            .all()

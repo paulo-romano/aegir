@@ -14,6 +14,9 @@ async def create_pdvs(pdvs):
 
 async def get_pdv_by_id(pdv_id):
     with PDVRepository(session) as repository:
-        pdv = await repository.get_by_id(pdv_id)
+        return await repository.get_by_id(pdv_id)
 
-    return pdv
+
+async def filter_pdv_by_lat_and_long(lat, long):
+    with PDVRepository(session) as repository:
+        return await repository.filter_pdv_by_lat_and_long(lat, long)

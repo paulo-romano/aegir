@@ -43,3 +43,18 @@ class TestGetPDVByID:
         pdv = await services.get_pdv_by_id(pdv_id)
 
         assert pdv == expected_pdv
+
+    @pytest.mark.asyncio
+    async def test_must_filter_by_lat_lng(
+            self, mocker, mocked_coroutine_factory):
+        lat = 1
+        lng = 1
+        expected_pdvs = [PDV()]
+        mocker.patch(
+            'aegir.core.repositories.PDVRepository.filter_pdv_by_lat_and_long',
+            mocked_coroutine_factory(expected_pdvs)
+        )
+
+        pdv = await services.filter_pdv_by_lat_and_long(lat, lng)
+
+        assert pdv == expected_pdvs

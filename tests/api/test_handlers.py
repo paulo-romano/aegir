@@ -61,7 +61,7 @@ class TestPDVGetByID:
         await handler.get()
 
         assert mocked_get_argument.called is True
-        assert mocker.call('id') in mocked_get_argument.call_args_list
+        assert mocker.call('id', None) in mocked_get_argument.call_args_list
 
     @pytest.mark.asyncio
     async def test_must_rise_not_found_error(
@@ -77,3 +77,27 @@ class TestPDVGetByID:
         handler = PDV(mocker.MagicMock(), mocker.MagicMock())
         with pytest.raises(NotFound):
             await handler.get()
+
+    @pytest.mark.asyncio
+    async def test_must_filter_by_lat_lng(
+            self, mocker, mocked_coroutine_factory):
+        expected_pdvs = [PDVModel()]
+
+        mocker.patch(
+            'aegir.core.services.filter_pdv_by_lat_and_long',
+            mocked_coroutine_factory(expected_pdvs)
+        )
+
+        mocker.patch('aegir.core.models.PDV.as_dict', {})
+
+        def new_get_argument(*args):
+            return None if args[1] == 'id' else 1
+
+        mocker.patch.object(PDV, 'get_argument', new_get_argument)
+
+        mocked_write = mocker.patch.object(PDV, 'write')
+
+        handler = PDV(mocker.MagicMock(), mocker.MagicMock())
+        await handler.get()
+
+        assert mocked_write.called is True
