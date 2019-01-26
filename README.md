@@ -71,6 +71,22 @@ curl -X POST \
 }'
 ```
 
+### Get PDV by ID
+```bash
+curl -X GET \
+  'http://127.0.0.1:8000/api/pdv?id=62e7a718-7ddb-4497-97e7-69133f7c8801' \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache'
+```
+
+### Find all PDVs by coverage area
+```bash
+curl -X GET \
+  'http://127.0.0.1:8000/api/pdv?lat=<LAT>>&lng=<LONG>' \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache'
+```
+
 ## How to configure to local development
 1. Create and activate virtual env
 2. Install dependencies
