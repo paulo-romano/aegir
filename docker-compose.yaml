@@ -1,0 +1,23 @@
+version: '2'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    environment:
+      SERVER_ADDRESS: '0.0.0.0'
+      SERVER_PORT: 8000
+      DEBUG: 'False'
+      POSTGRES_HOST: 'postgres'
+      POSTGRES_DATABASE: 'aegir'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: ''
+  postgres:
+    build: ./postgres/
+    ports:
+      - "5432:5432"
+    volumes:
+      - /var/lib/postgresql/data:/var/lib/postgresql/data
