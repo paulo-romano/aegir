@@ -8,6 +8,7 @@ This project is a simple beer delivery app backend using python and postgres, im
 - [Tornado](https://www.tornadoweb.org/en/stable/) to create the RESTful api and serve it.
 
 ## How to configure docker services
+In file docker-compose.yaml, you will find a service called "api", in this service has a environment key with all variables needed to run this service. For test propose, you should keep it unchanged.
 
 ## How to execute using docker and docker-compose
 1. Install docker and docker compose. You can find instructions to install on ubuntu 18.04 linux in [this](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04) (Docker) and [this](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04) (Docker compose). You can chose a different version and linux distribution in posts page.
@@ -103,6 +104,15 @@ cp contrib/env.sample .env
 python -m aegir db create
 pip install -r requirements-dev.txt
 tox
+```
+
+## How to deploy
+1. Install Ubuntu 18.04 on remote machine. A guide to DigitalOcean droplet can be found [here](https://www.digitalocean.com/docs/droplets/how-to/create/).
+2. Change deploy script to be executable.
+3. Execute the deploy script. If you do not have configured your ssh key, it will prompt for remote password twice.
+```bash
+chmod +x contrib/deploy.sh
+USER=root HOST=206.189.203.139 sh contrib/deploy.sh
 ```
 
 ## Running the local server
