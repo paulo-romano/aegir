@@ -112,7 +112,7 @@ tox
 3. Execute the deploy script. If you do not have configured your ssh key, it will prompt for remote password twice.
 ```bash
 chmod +x contrib/deploy.sh
-USER=root HOST=206.189.203.139 sh contrib/deploy.sh
+USER=<remote user> HOST=<remote address> sh contrib/deploy.sh
 ```
 
 ## Running the local server
