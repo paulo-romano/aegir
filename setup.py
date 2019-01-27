@@ -5,7 +5,7 @@ with open('requirements.txt') as file:
 
 setup(
     name="Aegir",
-    version='0.0.1',
+    version='0.0.2',
     py_modules=['aegir'],
     install_requires=requirements,
     entry_points='''
